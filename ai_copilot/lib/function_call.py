@@ -50,33 +50,50 @@ def execute_command(command, sudo=False):
     Execute a command in the terminal.
     Inputs:
         command (str)
-        sudo (bool)
+        sudo (bool) - whether to run the command with sudo privileges 
     """
     import subprocess
-    password = ""
+    import select
+    password = ''
     if sudo:
-        command = "sudo -S " + command
+        command = "echo {} | sudo -S {}".format(password, command)
 
     process = subprocess.Popen(
         command,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
-        stdin=subprocess.PIPE if sudo else None,
         shell=True,
-        text=True,  # This is equivalent to .decode('utf-8') in your version
+        text=True,
+        bufsize=1,  # Use line-buffered mode
     )
 
-    # If the process requires a password, send the password
-    if sudo:
-        process.stdin.write(password + '\n')
-        process.stdin.flush()
+    stdout, stderr = '', ''
+    max_iterations = 10
+    for _ in range(max_iterations):
+        # Check which pipes have data to read
+        read_fds = [process.stdout, process.stderr]
+        fds = select.select(read_fds, [], [], 0.1)[0]  # Use a small timeout
+        if process.stdout in fds:
+            line = process.stdout.readline()
+            if line != '':
+                stdout += line
+        if process.stderr in fds:
+            line = process.stderr.readline()
+            if line != '':
+                stderr += line
+        if process.poll() is not None:
+            break
 
-    stdout, stderr = process.communicate()
+    # get the remaining output (if any) after process ends
+    # rest_out, rest_err = process.communicate()
+    # stdout += rest_out
+    # stderr += rest_err
 
     return {
         "stdout": stdout,
         "stderr": stderr,
-        "returncode": process.returncode,
+        "returncode": process.poll(),  # Return return code if available
+        "pid": process.pid,  # Return PID as well
         "command": command,
     }
     
@@ -207,4 +224,6 @@ def main():
     pass
 
 if __name__ == '__main__':
+    # execute_command("cd chat_ui && python3 -m http.server 8000")
+    # execute_command("cd chat_ui && pwd")
     main()
