@@ -167,3 +167,19 @@ def identify_context(query:str):
         fixing_parser = OutputFixingParser.from_llm(parser=parser, llm=ChatOpenAI())
         parsed_result = fixing_parser.parse(result.content)
     return parsed_result.context
+
+
+"""
+identify_context
+
+Here's how it should work:
+1. The user enters a query
+2. The query is sent to the LLM
+3. LLM is also sent list of function calls it can make:
+    - add a new function to the codebase (send the function definition as a string)
+    - run a function in the codebase
+    - run a command in the terminal
+    - get a list of all functions in the codebase
+    - get a list of all files in the codebase
+    - modify/edit a function in the codebase
+"""
