@@ -1,6 +1,7 @@
+import os
 
-TRANSCRIPT_PATH = '/mnt/c/Users/Nazmus/coding-home/speech/transcript.txt'
-AUDIO_PATH = '/mnt/c/Users/Nazmus/coding-home/speech/audio'
+TRANSCRIPT_PATH = os.environ['TRANSCRIPT_PATH']
+AUDIO_PATH = os.environ['AUDIO_PATH']
 # read the transcript. if it only contains the word "READY", then return False else return the contents
 def read_transcript():
     with open(TRANSCRIPT_PATH, 'r') as f:

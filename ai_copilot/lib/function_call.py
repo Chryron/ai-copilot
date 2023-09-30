@@ -12,7 +12,7 @@ from langchain.tools import format_tool_to_openai_function, StructuredTool
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores import Chroma
 from langchain.prompts import SystemMessagePromptTemplate
-from ai_copilot.lib.voice_detect import read_transcript, write_transcript, save_audio
+from ai_copilot.lib.voice_detect import save_audio
 vectordb = Chroma(embedding_function=OpenAIEmbeddings())
 
 def add_to_history(messages):
@@ -275,24 +275,13 @@ def main():
     tools = [quit_tool, read_file_tool, execute_command_tool, get_last_n_lines_tool, get_similar_messages_tool, find_and_replace_tool, google_search_tool, navigate_webpage_tool]
     functions = [format_tool_to_openai_function(t) for t in tools]
     llm = ChatOpenAI(model="gpt-4-0613")
-    a = ["Create some HTML Javascript and CSS files for a basic website. Then host that website on the localhost port 8000.",
-         "Change the background color of the website to a gradient and add a text input field that updates the heading."]
-    a_ = 0 
+
     while True:
-        user_query = read_transcript()
-        if not user_query: 
-            continue
-        write_transcript('')
+        user_query = input("Enter your query: ")
+        # if not user_query: 
+        #     continue
+        # write_transcript('')
         
-        user_query = a[a_]
-        
-        print(user_query)
-        if a_ == 0:
-            user_query += 'Use python3 -m http.server 8000 to host the website. If the port is in use, find and kill the process using the port.'
-        elif a_ == 1:
-            user_query += 'Modify the HTML file to add a text input field. Use javascript to update the heading when the text input field is changed. Use CSS to change the background color of the website to a gradient of sleek colours.'
-        user_query += 'Please use the shell for this if necessary.'
-        a_ += 1
         sytem_message_prompt = SystemMessagePromptTemplate.from_template(system_message_template)
         System_Message = sytem_message_prompt.format(last_n_lines=get_last_n_lines(2), relevant_message=get_similar_messages(user_query, 1))
         messages = [
@@ -331,7 +320,7 @@ def main():
         add_to_history(messages[1:])
         print(AI_message.content)
         save_audio(AI_message.content)
-        write_transcript('READY')
+        # write_transcript('READY')
 
     pass
 
@@ -339,8 +328,9 @@ if __name__ == '__main__':
     # execute_command("cd chat_ui && python3 -m http.server 8000")
     # execute_command("cd chat_ui && pwd")
     # execute_command("ls -Rl")
-    write_transcript('READY')
+    # write_transcript('READY')
     try:
         main()
     except KeyboardInterrupt:
-        write_transcript('READY')
+        pass
+        # write_transcript('READY')
