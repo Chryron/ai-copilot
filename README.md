@@ -22,7 +22,6 @@ AI Copilot is a sophisticated coding voice assistant powered by OpenAI’s GPT-4
 
 ```bash
 git clone https://github.com/Chryron/ai-copilot.git
-git checkout function-call
 cd ai-copilot
 ```
 
