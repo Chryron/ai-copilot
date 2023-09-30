@@ -14,6 +14,8 @@ tiktoken = "^0.4.0"
 jupyterlab = "^4.0.2"
 langchain = "^0.0.202"
 chromadb = "^0.3.26"
+gtts = "^2.3.2"
+duckduckgo-search = "^3.8.3"
 
 [tool.poetry.scripts]
 run = "ai_copilot.scripts.main:main"
