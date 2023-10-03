@@ -6,7 +6,7 @@ load_dotenv()
 import logging
 logging.basicConfig(level=logging.INFO, filename="ai-copilot.log", filemode="a+", format="%(asctime)-15s %(levelname)-8s %(message)s")
 
-from langchain.chat_models import ChatOpenAI
+from langchain.chat_models import ChatLiteLLM
 from langchain.schema import HumanMessage, SystemMessage, ChatMessage
 from langchain.tools import format_tool_to_openai_function, StructuredTool
 from langchain.embeddings import OpenAIEmbeddings
@@ -110,9 +110,9 @@ def navigate_webpage(url: str, query: str) -> str:
     formatted_description = ""
     for tag_text in tag_text_list:
         formatted_description += f"{tag_text['tag']}: '{tag_text['text']}'\n"
-    from langchain.chat_models import ChatOpenAI
+    from langchain.chat_models import ChatLiteLLM
 
-    chat = ChatOpenAI(model="gpt-3.5-turbo-16k")
+    chat = ChatLiteLLM(model="gpt-3.5-turbo-16k")
 
     result = chat([HumanMessage(content=f'Answer the following query: {query}\n using the text from the following HTML elements of the webpage:\n' + formatted_description)])
     
@@ -274,7 +274,7 @@ def main():
     find_and_replace_tool = StructuredTool.from_function(find_and_replace)
     tools = [quit_tool, read_file_tool, execute_command_tool, get_last_n_lines_tool, get_similar_messages_tool, find_and_replace_tool, google_search_tool, navigate_webpage_tool]
     functions = [format_tool_to_openai_function(t) for t in tools]
-    llm = ChatOpenAI(model="gpt-4-0613")
+    llm = ChatLiteLLM(model="gpt-4-0613")
 
     while True:
         user_query = input("Enter your query: ")
